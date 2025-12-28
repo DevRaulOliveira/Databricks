@@ -1,0 +1,666 @@
+{
+  "datasets": [
+    {
+      "name": "522115a3",
+      "displayName": "Service_Governance",
+      "queryLines": [
+        "SELECT\n",
+        "  email\n",
+        "  , usage_log.service_name\n",
+        "  , usage_log.action_name \n",
+        "  , event_date\n",
+        "  FROM data_governance.users_usage\n",
+        "  WHERE usage_log.action_name RLIKE 'get'"
+      ]
+    },
+    {
+      "name": "58111e93",
+      "displayName": "Ai_Governance",
+      "queryLines": [
+        "SELECT * FROM data_governance.ai_usage"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "e8f16e2b",
+      "displayName": "Services Monitor",
+      "layout": [
+        {
+          "widget": {
+            "name": "7a7bb269",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "522115a3",
+                  "fields": [
+                    {
+                      "name": "action_name",
+                      "expression": "`action_name`"
+                    },
+                    {
+                      "name": "service_name",
+                      "expression": "`service_name`"
+                    },
+                    {
+                      "name": "count(*)",
+                      "expression": "COUNT(`*`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "service_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "count(*)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "action_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 1,
+            "y": 1,
+            "width": 5,
+            "height": 10
+          }
+        },
+        {
+          "widget": {
+            "name": "0f5fc169",
+            "multilineTextboxSpec": {
+              "lines": [
+                "# Service Monitor"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 5,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "8874d1e4",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "522115a3",
+                  "fields": [
+                    {
+                      "name": "monthly(event_date)",
+                      "expression": "DATE_TRUNC(\"MONTH\", `event_date`)"
+                    },
+                    {
+                      "name": "count(email)",
+                      "expression": "COUNT(`email`)"
+                    }
+                  ],
+                  "disaggregated": false,
+                  "orders": [
+                    {
+                      "direction": "DESC",
+                      "expression": "DATE_TRUNC(\"MONTH\", `event_date`)"
+                    }
+                  ]
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "count(email)"
+                },
+                "period": {
+                  "fieldName": "monthly(event_date)"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Total of Actions"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 1,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "f94b7626",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "522115a3",
+                  "fields": [
+                    {
+                      "name": "countdistinct(email)",
+                      "expression": "COUNT(DISTINCT `email`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "countdistinct(email)"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Total of Distinct Users"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 3,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "d12b45c3",
+            "queries": [
+              {
+                "name": "dashboards/01f0b85dbe8b10d0ace057dcfe6419fe/datasets/01f0b85dc8b5188fac6da49c370911ed_service_name",
+                "query": {
+                  "datasetName": "522115a3",
+                  "fields": [
+                    {
+                      "name": "service_name",
+                      "expression": "`service_name`"
+                    },
+                    {
+                      "name": "service_name_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "service_name",
+                    "queryName": "dashboards/01f0b85dbe8b10d0ace057dcfe6419fe/datasets/01f0b85dc8b5188fac6da49c370911ed_service_name"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Service Name"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 7,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "3b18c106",
+            "queries": [
+              {
+                "name": "dashboards/01f0b85dbe8b10d0ace057dcfe6419fe/datasets/01f0b85dc8b5188fac6da49c370911ed_action_name",
+                "query": {
+                  "datasetName": "522115a3",
+                  "fields": [
+                    {
+                      "name": "action_name",
+                      "expression": "`action_name`"
+                    },
+                    {
+                      "name": "action_name_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "action_name",
+                    "queryName": "dashboards/01f0b85dbe8b10d0ace057dcfe6419fe/datasets/01f0b85dc8b5188fac6da49c370911ed_action_name"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Action Name"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 9,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "aeab2676",
+            "queries": [
+              {
+                "name": "dashboards/01f0b85dbe8b10d0ace057dcfe6419fe/datasets/01f0b85dc8b5188fac6da49c370911ed_event_date",
+                "query": {
+                  "datasetName": "522115a3",
+                  "fields": [
+                    {
+                      "name": "event_date",
+                      "expression": "`event_date`"
+                    },
+                    {
+                      "name": "event_date_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "event_date",
+                    "queryName": "dashboards/01f0b85dbe8b10d0ace057dcfe6419fe/datasets/01f0b85dc8b5188fac6da49c370911ed_event_date"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Date"
+              }
+            }
+          },
+          "position": {
+            "x": 5,
+            "y": 0,
+            "width": 1,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "50894b8d",
+            "queries": [
+              {
+                "name": "dashboards/01f0b85dbe8b10d0ace057dcfe6419fe/datasets/01f0b85dc8b5188fac6da49c370911ed_event_date",
+                "query": {
+                  "datasetName": "522115a3",
+                  "fields": [
+                    {
+                      "name": "event_date",
+                      "expression": "`event_date`"
+                    },
+                    {
+                      "name": "event_date_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-date-picker",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "event_date",
+                    "queryName": "dashboards/01f0b85dbe8b10d0ace057dcfe6419fe/datasets/01f0b85dc8b5188fac6da49c370911ed_event_date"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Event Date"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 5,
+            "width": 1,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    },
+    {
+      "name": "e3b3469d",
+      "displayName": "Ai Monitor",
+      "layout": [
+        {
+          "widget": {
+            "name": "302fa048",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "58111e93",
+                  "fields": [
+                    {
+                      "name": "service_name",
+                      "expression": "`service_name`"
+                    },
+                    {
+                      "name": "event_date",
+                      "expression": "`event_date`"
+                    },
+                    {
+                      "name": "count(*)",
+                      "expression": "COUNT(`*`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "event_date",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "count(*)",
+                  "displayName": "Quantity",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "service_name",
+                  "displayName": "Legend",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "showDescription": true,
+                "title": "AI Service Usage",
+                "description": "Metrics"
+              }
+            }
+          },
+          "position": {
+            "x": 1,
+            "y": 1,
+            "width": 5,
+            "height": 8
+          }
+        },
+        {
+          "widget": {
+            "name": "68314cb2",
+            "multilineTextboxSpec": {
+              "lines": [
+                "# AI Monitor"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "74c00d88",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "58111e93",
+                  "fields": [
+                    {
+                      "name": "countdistinct(email)",
+                      "expression": "COUNT(DISTINCT `email`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "countdistinct(email)"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Total of Distinct Users"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 3,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "0341501c",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "58111e93",
+                  "fields": [
+                    {
+                      "name": "monthly(event_date)",
+                      "expression": "DATE_TRUNC(\"MONTH\", `event_date`)"
+                    },
+                    {
+                      "name": "count(service_name)",
+                      "expression": "COUNT(`service_name`)"
+                    }
+                  ],
+                  "disaggregated": false,
+                  "orders": [
+                    {
+                      "direction": "DESC",
+                      "expression": "DATE_TRUNC(\"MONTH\", `event_date`)"
+                    }
+                  ]
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "count(service_name)"
+                },
+                "period": {
+                  "fieldName": "monthly(event_date)"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Total of AI Actions"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 1,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "cb4d283b",
+            "queries": [
+              {
+                "name": "dashboards/01f0b85dbe8b10d0ace057dcfe6419fe/datasets/01f0b85e8ab21f06855ed81d560d61d6_event_date",
+                "query": {
+                  "datasetName": "58111e93",
+                  "fields": [
+                    {
+                      "name": "event_date",
+                      "expression": "`event_date`"
+                    },
+                    {
+                      "name": "event_date_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-date-picker",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "event_date",
+                    "queryName": "dashboards/01f0b85dbe8b10d0ace057dcfe6419fe/datasets/01f0b85e8ab21f06855ed81d560d61d6_event_date"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Event Date"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 5,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "21fdcecf",
+            "queries": [
+              {
+                "name": "dashboards/01f0b85dbe8b10d0ace057dcfe6419fe/datasets/01f0b85e8ab21f06855ed81d560d61d6_service_name",
+                "query": {
+                  "datasetName": "58111e93",
+                  "fields": [
+                    {
+                      "name": "service_name",
+                      "expression": "`service_name`"
+                    },
+                    {
+                      "name": "service_name_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "service_name",
+                    "queryName": "dashboards/01f0b85dbe8b10d0ace057dcfe6419fe/datasets/01f0b85e8ab21f06855ed81d560d61d6_service_name"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Service Name"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 7,
+            "width": 1,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}
