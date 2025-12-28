@@ -1,4 +1,3 @@
-%md
 # Documentação do Projeto: Governança de Dados e Métricas
 
 ## Visão Geral
