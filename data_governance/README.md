@@ -102,4 +102,13 @@ Monitorar o uso de recursos de IA (Genie e Assistant) no ambiente, permitindo an
 
 ---
 
+## Dashboard: `resources_monitor`
+Visão geral do painel de monitoramento de serviços e utilização de recursos de IA.
+
+<img width="1860" height="761" alt="image" src="https://github.com/user-attachments/assets/8cc0ee3e-3111-4776-86b9-0aa560cf7b71" />
+
+<img width="1860" height="761" alt="image" src="https://github.com/user-attachments/assets/55a98b36-bf34-40be-879e-8514c18bf683" />
+
+
+
 Esta documentação serve como referência para implementação, manutenção e auditoria do projeto de governança de dados no ambiente Databricks.
