@@ -1,46 +1,105 @@
-# 1. Databricks - Schema: data_governance
-Schema de governança de dados e métricas.
+%md
+# Documentação do Projeto: Governança de Dados e Métricas
 
-## 1.1. Visão Geral
-As tabelas a serem criadas visam a governança do ambiente e serão divididas nas seguintes frentes:
-- **users**: Informações dos usuários, cargos e funções.
-- **users_usage**: Atividades realizadas no ambiente.
-- **ai_usage**: Métricas de uso de recursos *Genie* e *AI Assistant*.
+## Visão Geral
+Este projeto tem como objetivo estruturar e monitorar o ambiente Databricks, promovendo governança de dados e rastreabilidade das atividades dos usuários e do uso de recursos de IA. As tabelas criadas são fundamentais para garantir transparência, controle e auditoria dos acessos e ações realizadas na plataforma.
 
 ---
 
-## 1.2. Tabela: users
-Referência da relação de todos os usuários do ambiente.
+## Tabela: `users`
+### Objetivo
+Armazenar informações detalhadas dos usuários do ambiente, permitindo identificar perfis, áreas de atuação e períodos de acesso.
 
-### 1.2.1. Descrição das Colunas (users)
-- **email**: Email do usuário.
-- **user_info**: Struct contendo:
-    - **username**: Nome completo.
-    - **company**: Empresa.
-    - **area**: Área de atuação.
-    - **team**: Equipe.
-- **dt_ini**: Data inicial de acesso.
-- **dt_end**: Última data de acesso.
-- **status**: Ativo ou inativo.
+### Estrutura
+* **email**: Email do usuário (chave primária).
+* **user_info**: Struct com dados customizados:
+  * `username`: Nome completo
+  * `company`: Empresa
+  * `area`: Área de atuação
+  * `team`: Equipe
+* **dt_ini**: Data inicial de acesso
+* **dt_end**: Última data de acesso
+* **status**: Ativo ou inativo
+
+### Origem dos Dados
+- Dados extraídos da tabela sistêmica `system.access.audit`.
+
+### Pipeline
+1. Exclui a tabela, se existir.
+2. Cria a tabela com a estrutura definida.
+3. Define `email` como chave primária.
+4. Realiza streaming de dados da origem.
+5. Insere dados:
+   - Inclui novos usuários apenas se não existirem.
+   - Atualiza datas de acesso conforme necessário.
+
+### Boas Práticas
+- Garantir unicidade do usuário pelo campo `email`.
+- Preservar histórico de acesso para auditoria.
+- Atualizar informações customizadas conforme mudanças organizacionais.
 
 ---
 
-## 1.3. Tabela: users_usage
-Atividades de usuários agrupadas por serviços.
+## Tabela: `users_usage`
+### Objetivo
+Registrar atividades dos usuários, agrupando por serviço e ação realizada, para rastrear o uso do ambiente.
 
-### 1.3.1. Descrição das Colunas (users_usage)
-- **email**: Email do usuário.
-- **usage_log**: Struct contendo:
-    - **service_name**: Nome do serviço.
-    - **action_name**: Nome da ação realizada.
-- **event_date**: Data da ocorrência.
+### Estrutura
+* **email**: Email do usuário (chave estrangeira).
+* **usage_log**: Struct com detalhes da ação:
+  * `service_name`: Nome do serviço
+  * `action_name`: Nome da ação
+* **event_date**: Data da ocorrência
+
+### Origem dos Dados
+- Dados extraídos da tabela sistêmica `system.access.audit`.
+
+### Pipeline
+1. Exclui a tabela, se existir.
+2. Cria a tabela com a estrutura definida.
+3. Define `email` como chave estrangeira.
+4. Realiza streaming de dados da origem.
+5. Insere registros de atividades conforme capturados.
+
+### Boas Práticas
+- Relacionar atividades ao usuário via chave estrangeira.
+- Manter granularidade das ações para facilitar auditoria e análise de uso.
 
 ---
 
-## 1.4. Tabela: ai_usage
-Monitoramento de atividades utilizando IA (Genie e Assistant).
+## Tabela: `ai_usage`
+### Objetivo
+Monitorar o uso de recursos de IA (Genie e Assistant) no ambiente, permitindo análise de adoção e impacto dessas ferramentas.
 
-### 1.4.1. Descrição das Colunas (ai_usage)
-- **email**: Email do usuário.
-- **service_name**: Serviço de IA utilizado (Genie ou Assistant).
-- **event_date**: Data da ocorrência.
+### Estrutura
+* **email**: Email do usuário
+* **service_name**: Serviço de IA utilizado (Genie ou Assistant)
+* **event_date**: Data da ocorrência
+
+### Origem dos Dados
+- Genie: registros na tabela sistêmica `system.access.audit`.
+- Assistant: registros na tabela sistêmica `system.access.assistant_events`.
+
+### Pipeline
+1. Exclui a tabela, se existir.
+2. Cria a tabela com a estrutura definida.
+3. Define `email` como chave estrangeira.
+4. Realiza streaming de dados das origens.
+5. Insere registros de uso de IA conforme capturados.
+
+### Boas Práticas
+- Segregar registros por tipo de serviço para facilitar análises comparativas.
+- Garantir integridade referencial com a tabela de usuários.
+- Atualizar periodicamente para refletir o uso real dos recursos.
+
+---
+
+## Considerações Gerais
+- Todas as tabelas devem ser criadas com atenção à integridade referencial e à atualização dos dados.
+- Recomenda-se versionar scripts de criação e ingestão para facilitar manutenção.
+- Documentar alterações e evoluções do modelo para garantir rastreabilidade.
+- Realizar auditorias periódicas para validar a consistência dos dados.
+
+---
+
+Esta documentação serve como referência para implementação, manutenção e auditoria do projeto de governança de dados no ambiente Databricks.
