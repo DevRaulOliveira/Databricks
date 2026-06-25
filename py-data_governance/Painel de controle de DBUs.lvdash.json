@@ -1,0 +1,345 @@
+{
+  "datasets": [
+    {
+      "name": "3be86364",
+      "displayName": "Recent Billing Product Usage Summary",
+      "queryLines": [
+        "WITH calculos\r\n",
+        "(SELECT \r\n",
+        "  billing_origin_product produto,\r\n",
+        "  usage_date data,\r\n",
+        "  SUM(usage_quantity) as total_dbus\r\n",
+        "FROM system.billing.usage\r\n",
+        "-- WHERE usage_date >= CURRENT_DATE() - INTERVAL 30 DAYS\r\n",
+        "GROUP BY billing_origin_product, usage_date\r\n",
+        "ORDER BY usage_date DESC, total_dbus DESC)\r\n",
+        "\r\n",
+        "SELECT\r\n",
+        "  produto\r\n",
+        "  , data\r\n",
+        "  , total_dbus\r\n",
+        "  , (total_dbus/4000) * 2.8 custo_dol\r\n",
+        "FROM calculos;"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "bb4383d4",
+      "displayName": "Painel de DBUs",
+      "layout": [
+        {
+          "widget": {
+            "name": "g",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "3be86364",
+                  "fields": [
+                    {
+                      "name": "produto",
+                      "expression": "`produto`"
+                    },
+                    {
+                      "name": "daily(data)",
+                      "expression": "DATE_TRUNC(\"DAY\", `data`)"
+                    },
+                    {
+                      "name": "sum(total_dbus)",
+                      "expression": "SUM(`total_dbus`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Gráfico de consumo de DBUs por Produto"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "daily(data)",
+                  "axis": {
+                    "title": "Data"
+                  },
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(total_dbus)",
+                  "axis": {
+                    "title": "Total de DBUs"
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "produto",
+                  "legend": {
+                    "title": "Legenda"
+                  },
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 2,
+            "width": 8,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "produto",
+            "queries": [
+              {
+                "name": "dashboards/01f17037c1881c9ab46e8e75c8ea1464/datasets/01f17037c3fb1c5783887f5f3eb6a56b_produto",
+                "query": {
+                  "datasetName": "3be86364",
+                  "fields": [
+                    {
+                      "name": "produto",
+                      "expression": "`produto`"
+                    },
+                    {
+                      "name": "produto_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Produto"
+              },
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "produto",
+                    "queryName": "dashboards/01f17037c1881c9ab46e8e75c8ea1464/datasets/01f17037c3fb1c5783887f5f3eb6a56b_produto"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 1,
+            "width": 4,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "total-custo",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "3be86364",
+                  "fields": [
+                    {
+                      "name": "sum(custo_dol)",
+                      "expression": "SUM(`custo_dol`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Total Custo"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(custo_dol)"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 0,
+            "width": 4,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "0043ddbb",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## Painel de Custos do Ambiente"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 4,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "7c2fc725",
+            "queries": [
+              {
+                "name": "dashboards/01f17037c1881c9ab46e8e75c8ea1464/datasets/01f17037c3fb1c5783887f5f3eb6a56b_data",
+                "query": {
+                  "datasetName": "3be86364",
+                  "fields": [
+                    {
+                      "name": "data",
+                      "expression": "`data`"
+                    },
+                    {
+                      "name": "data_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Data"
+              },
+              "widgetType": "filter-date-range-picker",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "data",
+                    "queryName": "dashboards/01f17037c1881c9ab46e8e75c8ea1464/datasets/01f17037c3fb1c5783887f5f3eb6a56b_data"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 1,
+            "width": 4,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "produtos-1",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "3be86364",
+                  "fields": [
+                    {
+                      "name": "data",
+                      "expression": "`data`"
+                    },
+                    {
+                      "name": "countdistinct(produto)",
+                      "expression": "COUNT(DISTINCT `produto`)"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "IN_RANGE(`data`, PARSE_RELATIVE_DATE('now/d', 'FLOOR'), PARSE_RELATIVE_DATE('now/d', 'CEIL'))"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Produtos Hoje"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "countdistinct(produto)"
+                },
+                "target": {
+                  "fieldName": "data"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 0,
+            "width": 4,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "57b2fa79",
+            "multilineTextboxSpec": {
+              "lines": [
+                "### Conceito\n",
+                "\n",
+                "Painel de controle de consumo de DBUs do ambiente, seguindo como boas praticas as orientações descritas na documentação oficial do *Databricks.*\n",
+                "\n",
+                "Para mais detalhes basta acessar a documentação a seguir:\n",
+                "\n",
+                "- [Databricks Billing Information](https://docs.databricks.com/aws/en/admin/system-tables/pricing)"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 1,
+            "width": 4,
+            "height": 3
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}
